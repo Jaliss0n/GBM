@@ -1,0 +1,13 @@
+#corpo-sidebar {
+    background-color: #103063;
+    height: 100vh;
+    width: 350px;
+    padding: 30px;
+}
+
+#logo-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-Items: center;
+    padding-bottom: 50px;
+}

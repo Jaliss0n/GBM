@@ -1,0 +1,24 @@
+#body-body{
+    padding: 30px 30px;
+}
+
+#header-title-body{
+    padding-bottom: 20px;
+    padding-top: 10px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+#observ-body{
+    padding-bottom: 20px;
+    display: flex;
+    align-items: baseline;
+
+}
+
+#observ-body h2{
+    padding-right: 30px;
+   
+
+}
