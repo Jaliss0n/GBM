@@ -1,0 +1,3 @@
+const authorization= "authorization=67c9d5c3887b64c33671bb25f681753a"
+
+export default authorization

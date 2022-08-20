@@ -1,18 +1,62 @@
 import { Table, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import TableBody from '@mui/material/TableBody';
 import React from "react";
+import authorization from "../authorization";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import '../components_css/Pesagens.css'
 
 export default function Pesagens(props) {
 
 
-    function createData(name, calories, fat, carbs, protein) {
-        return { name, calories, fat, carbs, protein };
+    const [dado, setDado] = useState([]);
+
+    useEffect(() => {
+
+        let axiosConfig = {
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                "Access-Control-Allow-Origin": "*",
+            }
+        };
+
+        axios.get(`https://api.tot.apigbmtech.com/api/selective-process/wagons?${authorization}`
+            , axiosConfig)
+            .then(res => {
+                setDado(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    })
+
+    function resPesagens(nome, produto) {
+
+        const empresa = dado.filter(d => d.railroad === nome && d.product === produto)
+        const pesso = empresa.map(dados => parseInt(dados.weight))
+        const total = pesso.reduce((acc, numero) => acc + numero, 0)
+        return total
+
     }
 
-    const rows = [
-        createData(2173, 159, 6.0, 24, 4.0),
-    ];
+    function resTotal(produto_1) {
+        const produto = dado.filter(d => d.product === produto_1)
+        const pesso = produto.map(dados => parseInt(dados.weight))
+        const total = pesso.reduce((acc, numero) => acc + numero, 0)
+        return total
+    }
+
+    function resTotalS_M(produto_1, produto2) {
+        const produto = dado.filter(d => d.product === produto_1 && d.product)
+        const pesso = produto.map(dados => parseInt(dados.weight))
+        const total = pesso.reduce((acc, numero) => acc + numero, 0)
+        return total
+    }
+
+    const Teste = (props.produto === false) ? true : false
+
+
 
     return (
         <div id='table-pesagens'>
@@ -27,19 +71,30 @@ export default function Pesagens(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row) => (
-                        <TableRow
-                            key={row.name}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell component="th" scope="row">
-                                {row.name}
-                            </TableCell>
-                            <TableCell >{row.calories}</TableCell>
-                            <TableCell >{row.fat}</TableCell>
-                            <TableCell ><strong>{row.carbs}</strong></TableCell>
-                        </TableRow>
-                    ))}
+                    <TableRow>
+                        <TableCell>
+                            {Teste != true ? resPesagens(props.empresa_1, props.produto).toLocaleString(2) :
+                                <div>{resPesagens(props.empresa_1, 'Soja').toLocaleString(2)}</div>}
+                        </TableCell>
+
+                        <TableCell >
+                            {Teste != true ? resPesagens(props.empresa_2, props.produto).toLocaleString(2) :
+                                <div>{resPesagens(props.empresa_2, 'Soja').toLocaleString(2)}</div>
+                        }</TableCell>
+
+                        <TableCell>
+                            {Teste != true ? resPesagens(props.empresa_3, props.produto).toLocaleString(2) :
+                                <div>{resPesagens(props.empresa_3, 'Milho').toLocaleString(2)}</div>
+                        }</TableCell>
+
+                        <TableCell >
+                            {Teste != true ? resTotal(props.produto).toLocaleString(2) :
+                                <div>{(resPesagens(props.empresa_1, 'Soja')
+                                    + resPesagens(props.empresa_2, 'Soja')
+                                    + resPesagens(props.empresa_3, 'Milho')).toLocaleString(2)}
+                                </div>}
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
         </div>
