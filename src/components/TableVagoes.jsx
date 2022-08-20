@@ -7,22 +7,25 @@ import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import authorization from "../authorization";
-import { Button, Link, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import Pesagens from "./Pesagens";
 import '../components_css/TableVagoes.css'
+import { useForm, Controller } from "react-hook-form";
+
 
 
 export default function TableVagoes() {
 
-    const [showLinks, setShowLinks] = useState(false)
 
+    const [showLinks, setShowLinks] = useState(false)
     const showItems = () => {
         setShowLinks(!showLinks)
     }
 
-
     const [dado, setDado] = useState([]);
+    const [obsv, setObsv] = useState([]);
 
+    //// CHAMADA VAGOES CADASTRADOS
     useEffect(() => {
 
         let axiosConfig = {
@@ -42,6 +45,49 @@ export default function TableVagoes() {
                 console.log(err)
             })
     })
+    //////////////////////CHAMADA OBSERVAÇOES/////////////////////////////
+
+    useEffect(() => {
+
+        let axiosConfig = {
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                "Access-Control-Allow-Origin": "*",
+            }
+        };
+
+        axios.get("https://api.tot.apigbmtech.com/api/selective-process/observation?authorization=67c9d5c3887b64c33671bb25f681753a"
+            , axiosConfig)
+            .then(res => {
+                setObsv(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    })
+
+    /////////////////////////CHAMADA CAMPO EDITAVEL///////////////////////////
+    const onSubmit = function (data) {
+        let axiosConfig = {
+
+            mode: 'no-cors',
+
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                "Access-Control-Allow-Origin": "*",
+            }
+        };
+        
+        axios.post("https://api.tot.apigbmtech.com/api/selective-process/observation?authorization=67c9d5c3887b64c33671bb25f681753a",JSON.stringify(data), axiosConfig)
+        .then(data => {
+            console.log(data, typeof data)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    const { control, handleSubmit } = useForm();
 
 
     function formatDate(date) {
@@ -52,12 +98,10 @@ export default function TableVagoes() {
     }
 
 
-
     const pesso = dado.map(dados => parseInt(dados.weight))
     const total = pesso.reduce((acc, numero) => acc + numero, 0)
 
     return (
-
 
         <div>
 
@@ -116,11 +160,30 @@ export default function TableVagoes() {
                         <Pesagens titulo="TOTAL" empresa_1='RUMO' empresa_2='MRS' empresa_3='VLI' produto={false} />
                     </div>
 
+                    <div id='observ-body'>
+                        <h2>Observações</h2>
+                        <Button type="submit" variant="contained" color='secondary'>Editar</Button>
+                    </div>
+
+                    <div>
+                        <Controller
+                            name='telefone'
+                            control={control}
+                            render={({ field: { onChange, value } }) => (
+                                <TextField
+                                    id="filled-multiline-flexible"
+                                    multiline
+                                    minRows={3}
+                                    value={obsv.map(o => o.observation)}
+                                    onChange={onChange}
+                                    variant="filled"
+                                    fullWidth
+                                />
+                            )}
+                        />
+                    </div>
                 </div>
-
-
             ) : null}
-
         </div>
     )
 }
